@@ -53,12 +53,15 @@ alias linc='docker run --rm -i $([ -t 1 ] && echo -t) --user "$(id -u):$(id -g)"
 	--read-only --cap-drop ALL --security-opt no-new-privileges \
 	-v "$HOME/.linc":/config -v "$PWD":/data ghcr.io/lincworld/linc'
 
-linc profiles add
+linc profiles add acme --claim <transfer id>
 linc fields panel --match voltage
 linc exports create panel:ABCDEFGH --fields 'telemetry.voltage_rms.*' --last P7D --out ./data
 linc convert ./data --to csv
 ```
 
+- `--claim` takes the transfer id from the access key's issue dialog: in your organisation's settings, issue a key, press **Add to the Linc CLI**, and run the command it shows. The organisation, key and secret come from it, so none is copied or typed. It works once, within 10 minutes.
+- `linc profiles add` without `--claim` asks for the organisation, the key and its secret instead.
+- `--claim` refuses to run beside `LINC_ORGANISATION`, `LINC_ACCESS_KEY_ID` or `LINC_ACCESS_KEY_SECRET`: unset them first.
 - `--user` makes the files yours; without it they belong to `65532`.
 - Create `~/.linc` first, or Docker creates it owned by root.
 - `-t` only at a terminal: a table for a person, the API's JSON into a pipe.
